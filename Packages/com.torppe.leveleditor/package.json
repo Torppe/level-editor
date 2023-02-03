@@ -1,0 +1,24 @@
+{
+  "name": "com.torppe.leveleditor",
+  "version": "2.0.0",
+  "displayName": "Level Editor",
+  "description": "This is the level editor to create Koura levels",
+  "unity": "2021.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "",
+  "changelogUrl": "",
+  "licensesUrl": "",
+  "dependencies": {
+    "com.unity.textmeshpro": "3.0.6",
+    "com.unity.inputsystem": "1.3.0"
+  },
+  "keywords": [
+    "Editor",
+    "Level",
+    "Koura",
+    "Chapter"
+  ],
+  "author": {
+    "name": "Tuomas M\u00e4nnist\u00f6"
+  }
+}
