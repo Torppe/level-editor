@@ -32,12 +32,10 @@ public class DraggableUIElement : MonoBehaviour, IDragHandler, IBeginDragHandler
     public void OnPointerDown(PointerEventData eventData)
     {
         OnClickUI?.Invoke(transform);
-        Debug.Log("clicked");
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
         OnClickUI?.Invoke(null);
-        Debug.Log("clicked2");
     }
 }

@@ -456,21 +456,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 943cc8c09c21e0242b7f1384b1452389, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SelectedBlock: {fileID: 0}
+  _disableOnPlay:
+  - {fileID: 1513609452}
+  - {fileID: 7153280707780674004}
+  - {fileID: 7153280706483815080}
+  - {fileID: 7153280706409799775}
+  changeStateButtonText: {fileID: 7153280707120048871}
   _rootTransform: {fileID: 1513609453}
+  SelectedBlock: {fileID: 0}
   _mainCamera: {fileID: 7392204503298827378}
   _functionToBlockMapper: {fileID: 11400000, guid: a63235abed9a3fb45a63880e0c64e53b,
     type: 2}
   _brush: {fileID: 299497309}
   _gridPrefab: {fileID: 5823975281362636810, guid: fc6a9175ee569f94ca6a9cbe58db3142,
     type: 3}
-  _disableOnPlay:
-  - {fileID: 1513609452}
-  - {fileID: 7153280707780674004}
-  - {fileID: 7153280706483815080}
-  - {fileID: 7153280706409799775}
   _edgeScrollEnabled: 1
-  changeStateButtonText: {fileID: 7153280707120048871}
 --- !u!114 &1168762472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6011,12 +6011,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1168762471}
-        m_TargetAssemblyTypeName: LevelGenerator, Assembly-CSharp
+        m_TargetAssemblyTypeName: Generator, com.torppe.leveleditor
         m_MethodName: Load
-        m_Mode: 1
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 7153280706747942674}
+          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: save_1
