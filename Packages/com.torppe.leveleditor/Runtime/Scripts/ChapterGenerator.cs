@@ -6,6 +6,8 @@ using System.Linq;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
+using static LevelGenerator;
+using static UnityEngine.EventSystems.PointerEventData;
 
 public class ChapterGenerator : Generator
 {
@@ -18,10 +20,39 @@ public class ChapterGenerator : Generator
     private bool _autoScroller = false;
     private List<DeathWall> _deathWalls = new List<DeathWall>();
     private List<ChapterLevel> _levels = new List<ChapterLevel>();
+    private string _levelFolder;
+
+    private void OnEnable()
+    {
+        ChapterLevel.OnAnyClicked += SelectLevel;
+    }
+    private void OnDisable()
+    {
+        ChapterLevel.OnAnyClicked -= SelectLevel;
+    }
+
+    private void SelectLevel(ChapterLevel level, InputButton inputButton)
+    {
+        if (inputButton == InputButton.Left)
+        {
+            _selectedLevel?.ToggleHighlight(false);
+            _selectedLevel = level;
+            _selectedLevel.ToggleHighlight(true);
+        }
+        else if (inputButton == InputButton.Right)
+        {
+            if (level == _selectedLevel)
+                _selectedLevel = null;
+
+            _levels.Remove(level);
+            Destroy(level.gameObject);
+        }
+    }
 
     private void Awake()
     {
         _saveSubFolder = "Chapters";
+        _levelFolder = Application.dataPath + $"/Saves/Levels/";
     }
 
     public void LoadLevel(TMP_InputField input)
@@ -33,7 +64,7 @@ public class ChapterGenerator : Generator
             return;
         }
 
-        string path = $"{SaveFolder}{fileName}.json";
+        string path = $"{_levelFolder}{fileName}.json";
 
         if (!File.Exists(path))
         {
@@ -41,11 +72,10 @@ public class ChapterGenerator : Generator
             return;
         }
 
-        var levelData = JsonConvert.DeserializeObject<LevelGenerator.LevelData>(path, _jsonSettings);
+        var levelData = JsonConvert.DeserializeObject<LevelData>(File.ReadAllText(path), _jsonSettings);
 
         var level = Instantiate(_levelPrefab);
-        level.FileName = fileName;
-        level.Load(levelData);
+        level.Load(levelData, fileName);
 
         _levels.Add(level);
     }
@@ -72,11 +102,10 @@ public class ChapterGenerator : Generator
         foreach (var level in data.Levels)
         {
             var path = $"{SaveFolder}{level.FileName}.json";
-            var levelData = JsonConvert.DeserializeObject<LevelGenerator.LevelData>(path, _jsonSettings);
+            var levelData = JsonConvert.DeserializeObject<LevelData>(path, _jsonSettings);
 
             var chapterLevel = Instantiate(_levelPrefab, level.Position, Quaternion.identity);
-            chapterLevel.FileName = level.FileName;
-            chapterLevel.Load(levelData);
+            chapterLevel.Load(levelData, level.FileName);
 
             _levels.Add(chapterLevel);
         }
@@ -110,6 +139,14 @@ public class ChapterGenerator : Generator
 
         string json = JsonConvert.SerializeObject(data, Formatting.Indented, _jsonSettings);
         File.WriteAllText($"{SaveFolder}{fileName}", json);
+    }
+
+    public override void ChangeState()
+    {
+        base.ChangeState();
+
+        Dictionary<Vector3, LevelData> positionToLevel = _levels.ToDictionary(l => l.transform.position, l => l.Data);
+        OnToggleState?.Invoke(_editing, positionToLevel);
     }
 
     [Serializable]

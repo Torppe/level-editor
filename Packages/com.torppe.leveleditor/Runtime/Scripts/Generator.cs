@@ -7,7 +7,8 @@ using UnityEngine;
 
 public abstract class Generator : MonoBehaviour
 {
-    public static Action<bool> OnPlay;
+    public static Action<bool, Dictionary<Vector3, LevelGenerator.LevelData>> OnToggleState;
+
     [SerializeField]
     private List<GameObject> _disableOnPlay = new List<GameObject>();
     [SerializeField]
@@ -28,7 +29,7 @@ public abstract class Generator : MonoBehaviour
             throw new ArgumentNullException("No save folder assigned!");
 
         SaveFolder = Application.dataPath + $"/Saves/{_saveSubFolder}/";
-        _jsonSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, TypeNameHandling = TypeNameHandling.Auto };
+        _jsonSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, TypeNameHandling = TypeNameHandling.Auto, Formatting = Formatting.Indented };
     }
 
     public virtual void Save(TMP_InputField inputField)
@@ -74,8 +75,6 @@ public abstract class Generator : MonoBehaviour
             o.SetActive(_editing);
 
         changeStateButtonText.text = _editing ? "Play" : "Edit";
-
-        OnPlay?.Invoke(_editing);
     }
 
     public virtual void Exit(bool confirm)

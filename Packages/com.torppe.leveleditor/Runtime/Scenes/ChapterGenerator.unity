@@ -458,6 +458,9 @@ MonoBehaviour:
   - {fileID: 3159195166313000945}
   changeStateButtonText: {fileID: 5981554148010629079}
   _rootTransform: {fileID: 1513609453}
+  _levelPrefab: {fileID: 5208886979513282904, guid: 9fe4a3d23b675434592dadc78ef74ca4,
+    type: 3}
+  _deathWallPrefab: {fileID: 0}
 --- !u!1001 &1358561051
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1911,9 +1914,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1168762469}
-        m_TargetAssemblyTypeName: ChapterGenerator, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 1168762473}
+        m_TargetAssemblyTypeName: ChapterGenerator, com.torppe.leveleditor
+        m_MethodName: LoadLevel
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 3159195166715058202}
@@ -4113,7 +4116,7 @@ Camera:
   far clip plane: 1000
   field of view: 40
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 150
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
