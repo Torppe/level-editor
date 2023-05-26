@@ -12,7 +12,8 @@ public class BlockMoving : Block
     public override void Load(BlockData blockData)
     {
         var data = (BlockMovingData)blockData;
-        base.Load<BlockMovingData>(data);
+
+        base.Load(data);
 
         _endpoint.position = data.EndpointPosition;
         _speed = data.Speed;
@@ -20,12 +21,15 @@ public class BlockMoving : Block
 
     public override void Save()
     {
-        base.Save<BlockMovingData>();
+        base.Save();
 
-        var data = (BlockMovingData)Data;
+        BlockMovingData data = new BlockMovingData();
+        data.Copy(Data);
         data.Function = "moving";
         data.EndpointPosition = EndpointPosition;
         data.Speed = _speed;
+
+        Data = data;
     }
 }
 

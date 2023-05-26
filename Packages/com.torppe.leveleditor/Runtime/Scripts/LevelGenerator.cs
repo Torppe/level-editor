@@ -304,11 +304,11 @@ public class LevelGenerator : Generator
     {
         RemoveBlocks();
 
-        var prefabs = _functionToBlockMapper.Blocks;
+        var prefabs = _functionToBlockMapper.Blocks.ToDictionary(b => b.Data.Function);
 
         foreach (var blockData in levelData.blocks)
         {
-            Block blockPrefab = string.IsNullOrWhiteSpace(blockData.Function) ? prefabs.First() : prefabs.Find(b => b.Data.Function.Equals(blockData.Function));
+            Block blockPrefab = prefabs.TryGetValue(blockData.Function, out var value) ? value : prefabs.First().Value;
 
             Block instantiatedObject = Instantiate(blockPrefab);
             instantiatedObject.transform.SetParent(_rootTransform);

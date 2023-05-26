@@ -7,20 +7,10 @@ public class Block : MonoBehaviour
 
     public virtual void Save()
     {
-        Save<BlockData>();
-    }
-
-    public virtual void Load(BlockData blockData)
-    {
-        Load<BlockData>(blockData);
-    }
-
-    protected void Save<T>() where T : BlockData, new()
-    {
         var function = Data.Function;
         var groupId = Data.GroupId;
 
-        Data = new T()
+        Data = new BlockData()
         {
             Position = Vector2Int.RoundToInt(transform.position),
             Rotation = transform.eulerAngles,
@@ -30,7 +20,7 @@ public class Block : MonoBehaviour
         };
     }
 
-    protected void Load<T>(T data) where T : BlockData
+    public virtual void Load(BlockData data)
     {
         Data = data;
 
@@ -52,6 +42,14 @@ public class BlockData
     [HideInInspector]
     public string GroupId;
     public string Function;
-    public object FunctionData;
+
+    public void Copy(BlockData data)
+    {
+        Position = data.Position;
+        Rotation = data.Rotation;
+        Scale = data.Scale;
+        GroupId = data.GroupId;
+        Function = data.Function;
+    }
 }
 
