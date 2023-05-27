@@ -6,12 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Generator/Scenes/LevelGenerator2.unity
-    guid: 7113c855619fc4345b862e68fadede5a
+    path: Packages/com.torppe.leveleditor/Runtime/Scenes/LevelGenerator.unity
+    guid: 7da787b16436cf941964e4623b481a39
   - enabled: 1
-    path: Assets/Generator/Scenes/ChapterGenerator.unity
-    guid: a9ce681588cd83944a6755d93ab2ec61
-  - enabled: 1
-    path: Assets/Generator/Scenes/SharedScene.unity
-    guid: 6204bb133ea6e4a458bc7b2286c015bf
+    path: Packages/com.torppe.leveleditor/Runtime/Scenes/ChapterGenerator.unity
+    guid: 8e246b883c3fa78449a31fbf281c1f08
   m_configObjects: {}

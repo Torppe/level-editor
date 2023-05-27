@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class LevelGenerator : Generator
 {
@@ -139,6 +140,11 @@ public class LevelGenerator : Generator
 
         LoadGrid(_gridSize.appliedValue.x, _gridSize.appliedValue.y);
         RemoveBlocks();
+    }
+
+    public void SwitchEditor()
+    {
+        SceneManager.LoadSceneAsync("ChapterGenerator");
     }
 
     private void MoveCamera()
