@@ -101,6 +101,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5343321827442146721, guid: 9145d39f6774a8d48924f9800eb728ea,
         type: 3}
+      propertyPath: IsGroupable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5343321827442146721, guid: 9145d39f6774a8d48924f9800eb728ea,
+        type: 3}
       propertyPath: Data.Function
       value: destroyOnTouch
       objectReference: {fileID: 0}

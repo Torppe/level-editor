@@ -8,6 +8,7 @@ using UnityEngine;
 public abstract class Generator : MonoBehaviour
 {
     public static Action<bool, Dictionary<Vector3, LevelGenerator.LevelData>> OnToggleState;
+    public static Action<string> OnEditorSwitch;
 
     [SerializeField]
     private List<GameObject> _disableOnPlay = new List<GameObject>();

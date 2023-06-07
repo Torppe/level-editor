@@ -4,6 +4,10 @@ using UnityEngine;
 public class Block : MonoBehaviour
 {
     public BlockData Data = new BlockData();
+    public bool IsGroupable;
+    [SerializeField]
+    private GameObject HighlightGo;
+
 
     public virtual void Save()
     {
@@ -27,6 +31,16 @@ public class Block : MonoBehaviour
         transform.position = (Vector3Int)data.Position;
         transform.eulerAngles = data.Rotation;
         transform.localScale = data.Scale;
+    }
+
+    public void Highlight(bool highlighted)
+    {
+        HighlightGo.SetActive(highlighted);
+    }
+
+    public void ApplyGroup(Material material)
+    {
+        HighlightGo.GetComponent<Renderer>().material = material;
     }
 }
 

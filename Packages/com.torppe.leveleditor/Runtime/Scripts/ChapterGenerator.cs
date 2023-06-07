@@ -152,7 +152,7 @@ public class ChapterGenerator : Generator
 
     public void SwitchEditor()
     {
-        SceneManager.LoadSceneAsync("LevelGenerator");
+        OnEditorSwitch?.Invoke("LevelGenerator");
     }
 
     [Serializable]

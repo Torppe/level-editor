@@ -470,7 +470,8 @@ MonoBehaviour:
   _brush: {fileID: 299497309}
   _gridPrefab: {fileID: 5823975281362636810, guid: fc6a9175ee569f94ca6a9cbe58db3142,
     type: 3}
-  _edgeScrollEnabled: 1
+  _groupedMaterial: {fileID: 2100000, guid: 5e9fe77473262994e973df27607cdc31, type: 2}
+  _edgeScrollEnabled: 0
 --- !u!114 &1168762472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2362,10 +2363,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: TabControllerUI, Assembly-CSharp
-        m_MethodName: ActivateTab
-        m_Mode: 3
+      - m_Target: {fileID: 1168762471}
+        m_TargetAssemblyTypeName: LevelGenerator, com.torppe.leveleditor
+        m_MethodName: SwitchEditMode
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2373,6 +2374,30 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7153280706830659189}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7153280705982720488}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!224 &7153280706573458489
 RectTransform:
@@ -3502,7 +3527,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 84.543365, y: -45.5}
+  m_AnchoredPosition: {x: 84.543365, y: -300.5}
   m_SizeDelta: {x: 169.08673, y: 35}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7153280706830659189
@@ -5541,17 +5566,41 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: TabControllerUI, Assembly-CSharp
-        m_MethodName: ActivateTab
-        m_Mode: 3
+      - m_Target: {fileID: 1168762471}
+        m_TargetAssemblyTypeName: LevelGenerator, com.torppe.leveleditor
+        m_MethodName: SwitchEditMode
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 7153280705982720488}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7153280706830659189}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!224 &7153280707579479179
 RectTransform:
@@ -5726,13 +5775,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 1168762471}
+        m_TargetAssemblyTypeName: LevelGenerator, com.torppe.leveleditor
+        m_MethodName: ApplyGroup
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 
 public class BlockMoving : Block
@@ -7,7 +8,31 @@ public class BlockMoving : Block
 
     [SerializeField]
     private Transform _endpoint;
-    private int _speed;
+    [SerializeField]
+    private TMP_Text _endpointText;
+    private int _speed = 3;
+    private LineRenderer _lineRenderer;
+
+    private void OnEnable()
+    {
+        _endpoint.GetComponent<DraggableUIElement>().OnClick += ChangeSpeed;
+    }
+
+    private void OnDisable()
+    {
+        _endpoint.GetComponent<DraggableUIElement>().OnClick -= ChangeSpeed;
+    }
+
+    private void Awake()
+    {
+        _lineRenderer = GetComponent<LineRenderer>();
+    }
+
+    private void Update()
+    {
+        _lineRenderer.SetPosition(0, transform.position);
+        _lineRenderer.SetPosition(1, EndpointPosition);
+    }
 
     public override void Load(BlockData blockData)
     {
@@ -15,7 +40,7 @@ public class BlockMoving : Block
 
         base.Load(data);
 
-        _endpoint.position = data.EndpointPosition;
+        _endpoint.position = transform.position + (Vector3)data.EndpointRelativePosition;
         _speed = data.Speed;
     }
 
@@ -26,10 +51,19 @@ public class BlockMoving : Block
         BlockMovingData data = new BlockMovingData();
         data.Copy(Data);
         data.Function = "moving";
-        data.EndpointPosition = EndpointPosition;
+        data.EndpointRelativePosition = EndpointPosition - (Vector2)transform.position;
         data.Speed = _speed;
 
         Data = data;
+    }
+
+    private void ChangeSpeed()
+    {
+        _speed += 3;
+        if (_speed > 15)
+            _speed = 3;
+
+        _endpointText.text = _speed.ToString();
     }
 }
 
@@ -37,5 +71,5 @@ public class BlockMoving : Block
 public class BlockMovingData : BlockData
 {
     public int Speed;
-    public Vector2 EndpointPosition;
+    public Vector2 EndpointRelativePosition;
 }

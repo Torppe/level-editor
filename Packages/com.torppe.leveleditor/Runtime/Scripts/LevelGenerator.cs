@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 public class LevelGenerator : Generator
 {
@@ -22,18 +21,19 @@ public class LevelGenerator : Generator
     [SerializeField]
     private GameObject _gridPrefab;
     [SerializeField]
+    private Material _groupedMaterial;
+    [SerializeField]
     private bool _edgeScrollEnabled = false;
 
     private (Vector2Int appliedValue, Vector2Int editedValue) _gridSize = new() { appliedValue = new Vector2Int(200, 200), editedValue = new Vector2Int(200, 200) };
-
+    private bool _groupEditing = false;
     private bool _alternateActionHeld = false;
     private bool _clickHeld = false;
     private bool _rightClickHeld = false;
-
-
     private Transform _uiElement = null;
-
     private Dictionary<Vector2Int, Block> _blocks = new Dictionary<Vector2Int, Block>();
+    private HashSet<Block> _blocksToGroup = new HashSet<Block>();
+    private Transform _gridObjectsParent;
     private List<Renderer> _gridObjects = new List<Renderer>();
 
     void OnEnable()
@@ -71,7 +71,6 @@ public class LevelGenerator : Generator
     public void OnRightClick(InputValue value)
     {
         _rightClickHeld = value.isPressed;
-
     }
 
     public void OnAlternateAction(InputValue value)
@@ -144,7 +143,26 @@ public class LevelGenerator : Generator
 
     public void SwitchEditor()
     {
-        SceneManager.LoadSceneAsync("ChapterGenerator");
+        OnEditorSwitch?.Invoke("ChapterGenerator");
+    }
+
+    public void SwitchEditMode(bool groupEditing)
+    {
+        _groupEditing = groupEditing;
+        _blocksToGroup.Clear();
+    }
+
+    public void ApplyGroup()
+    {
+        var groupId = Guid.NewGuid();
+        foreach (var block in _blocksToGroup)
+        {
+            block.Data.GroupId = groupId.ToString();
+            block.ApplyGroup(_groupedMaterial);
+            // block.Highlight(false);
+        }
+
+        _blocksToGroup.Clear();
     }
 
     private void MoveCamera()
@@ -199,10 +217,22 @@ public class LevelGenerator : Generator
         {
             for (int y = -offset; y <= offset; y++)
             {
+                var clampedPosition = GetClampedMousePosition() + new Vector2Int(x, y);
+
                 if (_clickHeld)
-                    TryAddBlock(GetClampedMousePosition() + new Vector2Int(x, y));
+                {
+                    if (!_groupEditing)
+                        AddBlock(clampedPosition);
+                    else
+                        AddToGroup(clampedPosition);
+                }
                 else if (_rightClickHeld)
-                    TryRemoveBlock(GetClampedMousePosition() + new Vector2Int(x, y));
+                {
+                    if (!_groupEditing)
+                        RemoveBlock(clampedPosition);
+                    else
+                        RemoveFromGroup(clampedPosition);
+                }
             }
         }
     }
@@ -215,39 +245,84 @@ public class LevelGenerator : Generator
         return Vector2Int.RoundToInt(mouseWorldPosition);
     }
 
-    private bool TryAddBlock(Vector2Int position)
+    private void AddBlock(Vector2Int position)
     {
         if (IsOutOfBounds(position))
-            return false;
+            return;
 
         if (_blocks.ContainsKey(position))
-            return false;
-
-        Block block = Instantiate(SelectedBlock, (Vector3Int)position, _brush.transform.rotation, _rootTransform);
+            return;
 
         //TODO
         //Prevent many players
 
-        _blocks.Add(position, block);
+        Block block = Instantiate(SelectedBlock, (Vector3Int)position, _brush.transform.rotation, _rootTransform);
 
-        return true;
+        _blocks.Add(position, block);
     }
 
-    private bool TryRemoveBlock(Vector2Int position)
+    private void RemoveBlock(Vector2Int position)
     {
         if (IsOutOfBounds(position))
-            return false;
+            return;
 
         if (_blocks.TryGetValue(position, out var block))
         {
-            Destroy(block.gameObject);
-            _blocks.Remove(position);
-
-            return true;
+            var groupId = block.Data.GroupId;
+            if (!string.IsNullOrWhiteSpace(groupId))
+            {
+                RemoveGroup(groupId);
+            }
+            else
+            {
+                _blocks.Remove(position);
+                Destroy(block.gameObject);
+            }
         }
-
-        return false;
     }
+
+    private void RemoveGroup(string groupId)
+    {
+        var blocksToRemove = _blocks.Values.Where(b => b.Data.GroupId == groupId).ToArray();
+
+        foreach (var block in blocksToRemove)
+        {
+            var positionInt = Vector2Int.RoundToInt(block.transform.position);
+            _blocks.Remove(positionInt);
+            Destroy(block.gameObject);
+        }
+    }
+
+    private void AddToGroup(Vector2Int position)
+    {
+        if (IsOutOfBounds(position))
+            return;
+        if (!_blocks.TryGetValue(position, out var block))
+            return;
+        if (!block.IsGroupable)
+            return;
+        if (_blocksToGroup.Contains(block))
+            return;
+        if (_blocksToGroup.Count > 0 && _blocksToGroup.First().Data.Function != block.Data.Function)
+            return;
+
+        _blocksToGroup.Add(block);
+        block.Highlight(true);
+    }
+
+    private void RemoveFromGroup(Vector2Int position)
+    {
+        if (IsOutOfBounds(position))
+            return;
+        if (!_blocks.TryGetValue(position, out var block))
+            return;
+        if (!_blocksToGroup.Contains(block))
+            return;
+
+        _blocksToGroup.Remove(block);
+        block.Highlight(false);
+    }
+
 
     private bool IsOutOfBounds(Vector2Int position)
     {
@@ -292,7 +367,12 @@ public class LevelGenerator : Generator
     {
         _gridSize.appliedValue = _gridSize.editedValue = new Vector2Int(width, height);
 
-        _gridObjects.ForEach(r => Destroy(r.gameObject));
+        if (_gridObjectsParent)
+            Destroy(_gridObjectsParent.gameObject);
+
+        _gridObjectsParent = new GameObject("grid").transform;
+        _gridObjectsParent.SetParent(_rootTransform);
+
         _gridObjects.Clear();
 
         for (int x = 0; x < width; x++)
@@ -300,7 +380,7 @@ public class LevelGenerator : Generator
             for (int y = 0; y < height; y++)
             {
                 var position = new Vector2(x, y);
-                var go = Instantiate(_gridPrefab, new Vector2(x, y), Quaternion.identity, _rootTransform);
+                var go = Instantiate(_gridPrefab, new Vector2(x, y), Quaternion.identity, _gridObjectsParent);
                 _gridObjects.Add(go.GetComponent<Renderer>());
             }
         }
