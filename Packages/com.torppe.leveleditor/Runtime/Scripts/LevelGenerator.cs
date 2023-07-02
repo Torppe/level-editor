@@ -102,6 +102,8 @@ public class LevelGenerator : Generator
         base.ChangeState();
 
         LevelData data = CreateLevelData();
+        data.SelectedLevel = true;
+
         var positionToLevel = new Dictionary<Vector3, LevelData>() { { Vector2.zero, data } };
         OnToggleState?.Invoke(_editing, positionToLevel);
     }
@@ -369,8 +371,8 @@ public class LevelGenerator : Generator
 
         LevelData data = new LevelData
         {
-            size = _gridSize.appliedValue,
-            blocks = values.Select(b => b.Data).ToList(),
+            Size = _gridSize.appliedValue,
+            Blocks = values.Select(b => b.Data).ToList(),
         };
 
         return data;
@@ -380,7 +382,7 @@ public class LevelGenerator : Generator
     {
         LevelData levelData = JsonConvert.DeserializeObject<LevelData>(json, _jsonSettings);
 
-        LoadGrid(levelData.size.x, levelData.size.y);
+        LoadGrid(levelData.Size.x, levelData.Size.y);
         LoadBlocks(levelData);
     }
 
@@ -414,7 +416,7 @@ public class LevelGenerator : Generator
         var prefabs = _functionToBlockMapper.Blocks.ToDictionary(b => b.Data.Function);
         var groups = new Dictionary<string, List<Block>>();
 
-        foreach (var blockData in levelData.blocks)
+        foreach (var blockData in levelData.Blocks)
         {
             Block blockPrefab = prefabs.TryGetValue(blockData.Function, out var value) ? value : prefabs.First().Value;
 
@@ -457,8 +459,8 @@ public class LevelGenerator : Generator
     [Serializable]
     public class LevelData
     {
-        public Vector2Int size;
-
-        public List<BlockData> blocks;
+        public bool SelectedLevel;
+        public Vector2Int Size;
+        public List<BlockData> Blocks;
     }
 }

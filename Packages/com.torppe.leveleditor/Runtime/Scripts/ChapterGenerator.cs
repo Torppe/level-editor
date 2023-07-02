@@ -36,9 +36,15 @@ public class ChapterGenerator : Generator
     {
         if (inputButton == InputButton.Left)
         {
-            _selectedLevel?.ToggleHighlight(false);
+            if (_selectedLevel)
+            {
+                _selectedLevel.ToggleHighlight(false);
+                _selectedLevel.Data.SelectedLevel = false;
+            }
+
             _selectedLevel = level;
             _selectedLevel.ToggleHighlight(true);
+            _selectedLevel.Data.SelectedLevel = true;
         }
         else if (inputButton == InputButton.Right)
         {

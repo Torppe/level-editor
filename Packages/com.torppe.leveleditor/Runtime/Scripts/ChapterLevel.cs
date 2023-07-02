@@ -55,18 +55,18 @@ public class ChapterLevel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         Data = data;
 
         RemoveEmptySpace(data);
-        transform.localScale = new Vector3Int(data.size.x, data.size.y, 1);
+        transform.localScale = new Vector3Int(data.Size.x, data.Size.y, 1);
 
         SetTexture(data);
 
         _fileNameText.text = FileName;
-        _fileNameText.rectTransform.localScale = new Vector2(1 / ((float)data.size.x / data.size.y), 1);
+        _fileNameText.rectTransform.localScale = new Vector2(1 / ((float)data.Size.x / data.Size.y), 1);
     }
 
     private void SetTexture(LevelData data)
     {
-        int height = data.size.y;
-        int width = data.size.x;
+        int height = data.Size.y;
+        int width = data.Size.x;
 
         Color[] blank = new Color[width * height];
         for (int i = 0; i < blank.Length; i++)
@@ -79,7 +79,7 @@ public class ChapterLevel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         texture.filterMode = FilterMode.Point;
         texture.SetPixels(blank);
 
-        foreach (var block in data.blocks)
+        foreach (var block in data.Blocks)
         {
             Color color = Color.white;
 
@@ -103,7 +103,7 @@ public class ChapterLevel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         var minPos = Vector2.positiveInfinity;
         var maxPos = Vector2.negativeInfinity;
 
-        foreach (var block in data.blocks)
+        foreach (var block in data.Blocks)
         {
             minPos = Vector2.Min(minPos, block.Position);
             maxPos = Vector2.Max(maxPos, block.Position);
@@ -111,9 +111,9 @@ public class ChapterLevel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         var diameter = maxPos - minPos;
         var extendedDiameter = diameter + diameter.normalized;
 
-        data.size = new Vector2Int(Mathf.RoundToInt(extendedDiameter.x), Mathf.CeilToInt(extendedDiameter.y));
+        data.Size = new Vector2Int(Mathf.RoundToInt(extendedDiameter.x), Mathf.CeilToInt(extendedDiameter.y));
 
-        foreach (var block in data.blocks)
+        foreach (var block in data.Blocks)
         {
             block.Position -= Vector2Int.CeilToInt(minPos);
         }
