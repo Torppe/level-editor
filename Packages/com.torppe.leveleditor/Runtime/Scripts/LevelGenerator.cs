@@ -149,20 +149,38 @@ public class LevelGenerator : Generator
     public void SwitchEditMode(bool groupEditing)
     {
         _groupEditing = groupEditing;
+
+        foreach (var block in _blocksToGroup)
+            block.Highlight(false);
+
         _blocksToGroup.Clear();
     }
 
     public void ApplyGroup()
     {
-        var groupId = Guid.NewGuid();
-        foreach (var block in _blocksToGroup)
-        {
-            block.Data.GroupId = groupId.ToString();
-            block.ApplyGroup(_groupedMaterial);
-            // block.Highlight(false);
-        }
+        if (_blocksToGroup.Count == 0)
+            return;
+
+        ApplyGroup(_blocksToGroup, Guid.NewGuid().ToString(), _blocksToGroup.FirstOrDefault(b => b.Data.Function == "moving"));
 
         _blocksToGroup.Clear();
+    }
+
+    public void ApplyGroup(IEnumerable<Block> blocks, string groupId, Block functionalBlock = null)
+    {
+        if (blocks.Count() == 0)
+            return;
+
+        foreach (var block in blocks)
+        {
+            block.Data.GroupId = groupId.ToString();
+            block.ChangeMaterial(_groupedMaterial);
+
+            if (functionalBlock != null && block != functionalBlock && block.TryGetComponent<BlockMoving>(out var moving))
+            {
+                moving.ToggleEndpoint(false);
+            }
+        }
     }
 
     private void MoveCamera()
@@ -301,10 +319,13 @@ public class LevelGenerator : Generator
             return;
         if (!block.IsGroupable)
             return;
+        if (!string.IsNullOrEmpty(block.Data.GroupId))
+            return;
         if (_blocksToGroup.Contains(block))
             return;
         if (_blocksToGroup.Count > 0 && _blocksToGroup.First().Data.Function != block.Data.Function)
             return;
+
 
         _blocksToGroup.Add(block);
         block.Highlight(true);
@@ -391,6 +412,7 @@ public class LevelGenerator : Generator
         RemoveBlocks();
 
         var prefabs = _functionToBlockMapper.Blocks.ToDictionary(b => b.Data.Function);
+        var groups = new Dictionary<string, List<Block>>();
 
         foreach (var blockData in levelData.blocks)
         {
@@ -401,6 +423,25 @@ public class LevelGenerator : Generator
             instantiatedObject.Load(blockData);
 
             _blocks.Add(blockData.Position, instantiatedObject);
+
+            if (!string.IsNullOrWhiteSpace(blockData.GroupId))
+            {
+                string guid = blockData.GroupId;
+
+                if (groups.TryGetValue(guid, out var functionAndBlocks))
+                {
+                    functionAndBlocks.Add(instantiatedObject);
+                }
+                else
+                {
+                    groups.Add(guid, new List<Block> { instantiatedObject });
+                }
+            }
+        }
+
+        foreach (var group in groups)
+        {
+            ApplyGroup(group.Value, group.Key, group.Value.FirstOrDefault(b => b.Data.Function == "moving" && !((BlockMovingData)b.Data).Deactivated));
         }
     }
 

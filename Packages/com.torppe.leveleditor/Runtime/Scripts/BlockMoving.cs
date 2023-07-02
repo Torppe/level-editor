@@ -13,6 +13,8 @@ public class BlockMoving : Block
     private int _speed = 3;
     private LineRenderer _lineRenderer;
 
+    public bool deactivated;
+
     private void OnEnable()
     {
         _endpoint.GetComponent<DraggableUIElement>().OnClick += ChangeSpeed;
@@ -30,6 +32,9 @@ public class BlockMoving : Block
 
     private void Update()
     {
+        if (deactivated)
+            return;
+
         _lineRenderer.SetPosition(0, transform.position);
         _lineRenderer.SetPosition(1, EndpointPosition);
     }
@@ -40,8 +45,15 @@ public class BlockMoving : Block
 
         base.Load(data);
 
-        _endpoint.position = transform.position + (Vector3)data.EndpointRelativePosition;
-        _speed = data.Speed;
+        if (data.Deactivated)
+        {
+            ToggleEndpoint(false);
+        }
+        else
+        {
+            _endpoint.position = transform.position + (Vector3)data.EndpointRelativePosition;
+            SetSpeed(data.Speed);
+        }
     }
 
     public override void Save()
@@ -51,25 +63,48 @@ public class BlockMoving : Block
         BlockMovingData data = new BlockMovingData();
         data.Copy(Data);
         data.Function = "moving";
-        data.EndpointRelativePosition = EndpointPosition - (Vector2)transform.position;
-        data.Speed = _speed;
+        data.Deactivated = deactivated;
+
+        if (!deactivated)
+        {
+            data.EndpointRelativePosition = EndpointPosition - (Vector2)transform.position;
+            data.Speed = _speed;
+        }
 
         Data = data;
     }
 
+    public void ToggleEndpoint(bool toggled)
+    {
+        deactivated = !toggled;
+        _lineRenderer.enabled = toggled;
+        _endpoint.gameObject.SetActive(toggled);
+        if (!toggled)
+            _endpoint.GetComponent<DraggableUIElement>().OnClick -= ChangeSpeed;
+    }
+
+    private void SetSpeed(int speed)
+    {
+        _speed = speed;
+        _endpointText.text = speed.ToString();
+    }
+
     private void ChangeSpeed()
     {
-        _speed += 3;
-        if (_speed > 15)
-            _speed = 3;
+        var newSpeed = _speed += 3;
 
-        _endpointText.text = _speed.ToString();
+        newSpeed += 3;
+        if (newSpeed > 15)
+            newSpeed = 3;
+
+        SetSpeed(newSpeed);
     }
 }
 
 [Serializable]
 public class BlockMovingData : BlockData
 {
+    public bool Deactivated;
     public int Speed;
     public Vector2 EndpointRelativePosition;
 }

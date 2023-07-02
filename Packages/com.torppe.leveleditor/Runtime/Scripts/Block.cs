@@ -33,14 +33,15 @@ public class Block : MonoBehaviour
         transform.localScale = data.Scale;
     }
 
+    public void ChangeMaterial(Material material)
+    {
+        HighlightGo.SetActive(true);
+        HighlightGo.GetComponent<Renderer>().material = material;
+    }
+
     public void Highlight(bool highlighted)
     {
         HighlightGo.SetActive(highlighted);
-    }
-
-    public void ApplyGroup(Material material)
-    {
-        HighlightGo.GetComponent<Renderer>().material = material;
     }
 }
 
