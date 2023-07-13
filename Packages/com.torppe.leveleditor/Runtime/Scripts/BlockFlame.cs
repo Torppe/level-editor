@@ -1,79 +1,38 @@
 using System;
-using TMPro;
 using UnityEngine;
 
 public class BlockFlame : Block
 {
-    public Vector2 EndpointPosition => _endpoint.position;
-    private int _timeOn = 2;
-    private int _timeOff = 2;
-
-    [SerializeField]
-    private TMP_InputField _timeOnInput;
-    [SerializeField]
-    private TMP_InputField _timeOffInput;
+    private InputField _timeOnInput;
+    private InputField _timeOffInput;
 
     [SerializeField]
     private Transform _endpoint;
     [SerializeField]
-    private GameObject _configurationUi;
+    private ConfigurationUi _configurationUi;
     private LineRenderer _lineRenderer;
 
     private void OnEnable()
     {
         _endpoint.GetComponent<DraggableUIElement>().OnClick += ToggleConfigurationUi;
-        _timeOffInput.onValueChanged.AddListener((value) =>
-        {
-            if (int.TryParse(value, out int result))
-            {
-                _timeOff = result;
-            }
-        });
-
-        _timeOnInput.onValueChanged.AddListener((value) =>
-        {
-            if (int.TryParse(value, out int result))
-            {
-                _timeOn = result;
-            }
-        });
     }
 
     private void OnDisable()
     {
         _endpoint.GetComponent<DraggableUIElement>().OnClick -= ToggleConfigurationUi;
-        _timeOffInput.onValueChanged.RemoveAllListeners();
-        _timeOnInput.onValueChanged.RemoveAllListeners();
     }
 
     private void Awake()
     {
         _lineRenderer = GetComponent<LineRenderer>();
-
-        _timeOffInput.text = _timeOff.ToString();
-        _timeOnInput.text = _timeOn.ToString();
-
-        _timeOffInput.onValueChanged.AddListener((value) =>
-        {
-            if (int.TryParse(value, out int result))
-            {
-                _timeOff = result;
-            }
-        });
-
-        _timeOnInput.onValueChanged.AddListener((value) =>
-        {
-            if (int.TryParse(value, out int result))
-            {
-                _timeOn = result;
-            }
-        });
+        _configurationUi.AddField("Time On", 2);
+        _configurationUi.AddField("Time Off", 2);
     }
 
     private void Update()
     {
         _lineRenderer.SetPosition(0, transform.position);
-        _lineRenderer.SetPosition(1, EndpointPosition);
+        _lineRenderer.SetPosition(1, _endpoint.position);
     }
 
     public override void Load(BlockData blockData)
@@ -83,11 +42,8 @@ public class BlockFlame : Block
         base.Load(data);
         _endpoint.position = transform.position + (Vector3)data.EndpointRelativePosition;
 
-        _timeOn = data.TimeOn;
-        _timeOff = data.TimeOff;
-
-        _timeOffInput.text = _timeOff.ToString();
-        _timeOnInput.text = _timeOn.ToString();
+        _timeOnInput.Value = data.TimeOn;
+        _timeOffInput.Value = data.TimeOff;
     }
 
     public override void Save()
@@ -97,16 +53,16 @@ public class BlockFlame : Block
         BlockFlameData data = new BlockFlameData();
         data.Copy(Data);
         data.Function = "timed_death_obstacle";
-        data.TimeOn = _timeOn;
-        data.TimeOff = _timeOff;
-        data.EndpointRelativePosition = EndpointPosition - (Vector2)transform.position;
+        data.TimeOn = _timeOnInput.Value;
+        data.TimeOff = _timeOffInput.Value;
+        data.EndpointRelativePosition = _endpoint.position - transform.position;
 
         Data = data;
     }
 
     public void ToggleConfigurationUi()
     {
-        _configurationUi.SetActive(!_configurationUi.activeSelf);
+        _configurationUi.gameObject.SetActive(!_configurationUi.gameObject.activeSelf);
     }
 }
 
