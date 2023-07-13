@@ -336,6 +336,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 409972348774741614, guid: 9145d39f6774a8d48924f9800eb728ea,
+        type: 3}
+      propertyPath: m_text
+      value: M
+      objectReference: {fileID: 0}
     - target: {fileID: 2366673760787650562, guid: 9145d39f6774a8d48924f9800eb728ea,
         type: 3}
       propertyPath: m_RootOrder
@@ -409,7 +414,12 @@ PrefabInstance:
     - target: {fileID: 2366673762066576659, guid: 9145d39f6774a8d48924f9800eb728ea,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5109159451651771531, guid: 9145d39f6774a8d48924f9800eb728ea,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5343321827442146721, guid: 9145d39f6774a8d48924f9800eb728ea, type: 3}
@@ -539,14 +549,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
     Position: {x: 0, y: 0}
-    Rotation: {x: 0, y: 0}
+    Rotation: {x: 0, y: 0, z: 0}
     Scale: {x: 0, y: 0, z: 0}
     GroupId: 
     Function: moving
+  IsSingular: 0
   IsGroupable: 1
+  IsRotateable: 1
   HighlightGo: {fileID: 4037025085539452063}
   _endpoint: {fileID: 619766539083447053}
   _endpointText: {fileID: 4662592728922010180}
+  deactivated: 0
 --- !u!4 &8350146643900137750 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2366673760787650562, guid: 9145d39f6774a8d48924f9800eb728ea,

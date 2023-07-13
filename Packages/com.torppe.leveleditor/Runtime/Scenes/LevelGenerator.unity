@@ -471,7 +471,7 @@ MonoBehaviour:
   _gridPrefab: {fileID: 5823975281362636810, guid: fc6a9175ee569f94ca6a9cbe58db3142,
     type: 3}
   _groupedMaterial: {fileID: 2100000, guid: 5e9fe77473262994e973df27607cdc31, type: 2}
-  _edgeScrollEnabled: 0
+  _edgeScrollEnabled: 1
 --- !u!114 &1168762472
 MonoBehaviour:
   m_ObjectHideFlags: 0

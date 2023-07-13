@@ -7,6 +7,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 409972348774741614, guid: 9145d39f6774a8d48924f9800eb728ea,
+        type: 3}
+      propertyPath: m_text
+      value: D
+      objectReference: {fileID: 0}
     - target: {fileID: 2366673760787650562, guid: 9145d39f6774a8d48924f9800eb728ea,
         type: 3}
       propertyPath: m_RootOrder
@@ -75,6 +80,11 @@ PrefabInstance:
     - target: {fileID: 2366673761226150045, guid: 9145d39f6774a8d48924f9800eb728ea,
         type: 3}
       propertyPath: m_fontSize
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5109159451651771531, guid: 9145d39f6774a8d48924f9800eb728ea,
+        type: 3}
+      propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5343321827442146721, guid: 9145d39f6774a8d48924f9800eb728ea,
