@@ -30,6 +30,7 @@ public class LevelGenerator : Generator
     private bool _alternateActionHeld = false;
     private bool _clickHeld = false;
     private bool _rightClickHeld = false;
+    private bool _preventActions = false;
     private Transform _uiElement = null;
     private Dictionary<Vector2Int, Block> _blocks = new Dictionary<Vector2Int, Block>();
     private HashSet<string> _singularBlocks = new HashSet<string>();
@@ -40,10 +41,12 @@ public class LevelGenerator : Generator
     void OnEnable()
     {
         DraggableUIElement.OnClickUI += (uiElement) => _uiElement = uiElement;
+        ConfigurationUi.OnEdit += (preventActions) => _preventActions = preventActions;
     }
     void OnDisable()
     {
         DraggableUIElement.OnClickUI -= (uiElement) => _uiElement = uiElement;
+        ConfigurationUi.OnEdit -= (preventActions) => _preventActions = preventActions;
     }
 
     void Awake()
@@ -59,6 +62,10 @@ public class LevelGenerator : Generator
             return;
 
         MoveCamera();
+
+        if (_preventActions)
+            return;
+
         MoveBrush();
         MoveUIElement();
         SetBlocks();
