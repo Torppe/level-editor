@@ -25,8 +25,8 @@ public class BlockFlame : Block
     private void Awake()
     {
         _lineRenderer = GetComponent<LineRenderer>();
-        _configurationUi.AddField("Time On", 2);
-        _configurationUi.AddField("Time Off", 2);
+        _timeOnInput = _configurationUi.AddField("Time On", 2);
+        _timeOffInput = _configurationUi.AddField("Time Off", 2);
     }
 
     private void Update()

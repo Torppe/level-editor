@@ -36,7 +36,7 @@ public class LevelGenerator : Generator
     private HashSet<string> _singularBlocks = new HashSet<string>();
     private HashSet<Block> _blocksToGroup = new HashSet<Block>();
     private Transform _gridObjectsParent;
-    private List<Renderer> _gridObjects = new List<Renderer>();
+    private Dictionary<Vector2, Renderer> _gridObjects = new Dictionary<Vector2, Renderer>();
 
     void OnEnable()
     {
@@ -411,21 +411,31 @@ public class LevelGenerator : Generator
     {
         _gridSize.appliedValue = _gridSize.editedValue = new Vector2Int(width, height);
 
-        if (_gridObjectsParent)
-            Destroy(_gridObjectsParent.gameObject);
+        if (!_gridObjectsParent)
+        {
+            _gridObjectsParent = new GameObject("grid").transform;
+            _gridObjectsParent.SetParent(_rootTransform);
+        }
 
-        _gridObjectsParent = new GameObject("grid").transform;
-        _gridObjectsParent.SetParent(_rootTransform);
-
-        _gridObjects.Clear();
+        foreach (var o in _gridObjects)
+        {
+            o.Value.gameObject.SetActive(false);
+        }
 
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
                 var position = new Vector2(x, y);
-                var go = Instantiate(_gridPrefab, new Vector2(x, y), Quaternion.identity, _gridObjectsParent);
-                _gridObjects.Add(go.GetComponent<Renderer>());
+                if (_gridObjects.TryGetValue(position, out var renderer))
+                {
+                    renderer.gameObject.SetActive(true);
+                }
+                else
+                {
+                    var go = Instantiate(_gridPrefab, new Vector2(x, y), Quaternion.identity, _gridObjectsParent);
+                    _gridObjects.Add(position, go.GetComponent<Renderer>());
+                }
             }
         }
 
@@ -443,8 +453,7 @@ public class LevelGenerator : Generator
         {
             Block blockPrefab = prefabs.TryGetValue(blockData.Function, out var value) ? value : prefabs.First().Value;
 
-            Block instantiatedObject = Instantiate(blockPrefab);
-            instantiatedObject.transform.SetParent(_rootTransform);
+            Block instantiatedObject = Instantiate(blockPrefab, _rootTransform);
             instantiatedObject.Load(blockData);
 
             _blocks.Add(blockData.Position, instantiatedObject);
