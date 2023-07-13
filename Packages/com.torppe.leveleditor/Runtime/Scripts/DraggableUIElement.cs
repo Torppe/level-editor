@@ -10,17 +10,23 @@ public class DraggableUIElement : MonoBehaviour, IDragHandler, IBeginDragHandler
     public Action OnClick;
     private Vector3 dragOffset;
 
+    private bool preventClick;
+
     public virtual void OnDrag(PointerEventData eventData)
     {
     }
 
     public virtual void OnPointerClick(PointerEventData eventData)
     {
-        OnClick?.Invoke();
+        if (preventClick)
+            preventClick = false;
+        else
+            OnClick?.Invoke();
     }
 
     public virtual void OnBeginDrag(PointerEventData eventData)
     {
+        preventClick = true;
     }
 
     public virtual void OnPointerEnter(PointerEventData eventData)

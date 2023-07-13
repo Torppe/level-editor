@@ -275,8 +275,8 @@ public class LevelGenerator : Generator
 
         //TODO
         //Prevent many players
-
-        Block block = Instantiate(SelectedBlock, (Vector3Int)position, _brush.transform.rotation, _rootTransform);
+        var rotation = SelectedBlock.IsRotateable ? _brush.transform.rotation : Quaternion.identity;
+        Block block = Instantiate(SelectedBlock, (Vector3Int)position, rotation, _rootTransform);
 
         _blocks.Add(position, block);
     }

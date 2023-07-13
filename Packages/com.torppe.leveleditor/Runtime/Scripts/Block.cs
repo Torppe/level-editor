@@ -5,9 +5,9 @@ public class Block : MonoBehaviour
 {
     public BlockData Data = new BlockData();
     public bool IsGroupable;
+    public bool IsRotateable = true;
     [SerializeField]
     private GameObject HighlightGo;
-
 
     public virtual void Save()
     {
@@ -51,7 +51,7 @@ public class BlockData
     [HideInInspector]
     public Vector2Int Position;
     [HideInInspector]
-    public Vector2 Rotation;
+    public Vector3 Rotation;
     [HideInInspector]
     public Vector3 Scale;
     [HideInInspector]
