@@ -105,6 +105,12 @@ public class LevelGenerator : Generator
         }
     }
 
+    public void OnCenterCamera()
+    {
+        var camPos = _mainCamera.transform.position;
+        _mainCamera.transform.position = new Vector3(0, 0, camPos.z);
+    }
+
     public override void ChangeState()
     {
         base.ChangeState();
@@ -422,6 +428,8 @@ public class LevelGenerator : Generator
                 _gridObjects.Add(go.GetComponent<Renderer>());
             }
         }
+
+        OnCenterCamera();
     }
 
     private void LoadBlocks(LevelData levelData)
@@ -470,7 +478,6 @@ public class LevelGenerator : Generator
         _blocks.Clear();
         _singularBlocks.Clear();
     }
-
 
     [Serializable]
     public class LevelData
