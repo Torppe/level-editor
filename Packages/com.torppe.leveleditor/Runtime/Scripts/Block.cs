@@ -4,6 +4,7 @@ using UnityEngine;
 public class Block : MonoBehaviour
 {
     public BlockData Data = new BlockData();
+    public bool IsSingular;
     public bool IsGroupable;
     public bool IsRotateable = true;
     [SerializeField]

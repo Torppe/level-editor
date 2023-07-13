@@ -32,6 +32,7 @@ public class LevelGenerator : Generator
     private bool _rightClickHeld = false;
     private Transform _uiElement = null;
     private Dictionary<Vector2Int, Block> _blocks = new Dictionary<Vector2Int, Block>();
+    private HashSet<string> _singularBlocks = new HashSet<string>();
     private HashSet<Block> _blocksToGroup = new HashSet<Block>();
     private Transform _gridObjectsParent;
     private List<Renderer> _gridObjects = new List<Renderer>();
@@ -273,12 +274,16 @@ public class LevelGenerator : Generator
         if (_blocks.ContainsKey(position))
             return;
 
-        //TODO
-        //Prevent many players
+        if (_singularBlocks.Contains(SelectedBlock.Data.Function))
+            return;
+
         var rotation = SelectedBlock.IsRotateable ? _brush.transform.rotation : Quaternion.identity;
         Block block = Instantiate(SelectedBlock, (Vector3Int)position, rotation, _rootTransform);
 
         _blocks.Add(position, block);
+
+        if (SelectedBlock.IsSingular)
+            _singularBlocks.Add(SelectedBlock.Data.Function);
     }
 
     private void RemoveBlock(Vector2Int position)
@@ -295,6 +300,9 @@ public class LevelGenerator : Generator
             }
             else
             {
+                if (_singularBlocks.Contains(block.Data.Function))
+                    _singularBlocks.Remove(block.Data.Function);
+
                 _blocks.Remove(position);
                 Destroy(block.gameObject);
             }
@@ -453,6 +461,7 @@ public class LevelGenerator : Generator
             Destroy(block.gameObject);
 
         _blocks.Clear();
+        _singularBlocks.Clear();
     }
 
 
