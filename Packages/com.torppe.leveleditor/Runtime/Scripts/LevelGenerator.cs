@@ -203,29 +203,8 @@ public class LevelGenerator : Generator
     {
         if (_edgeScrollEnabled)
         {
-            Vector3 mousePosition = Mouse.current.position.ReadValue();
-
-            var width = Screen.width;
-            var height = Screen.height;
-            var edgeSize = 10;
             var moveAmount = 50 * Time.deltaTime;
-
-            if (mousePosition.x < edgeSize)
-            {
-                _mainCamera.transform.position += Vector3.left * moveAmount;
-            }
-            if (mousePosition.x > width - edgeSize)
-            {
-                _mainCamera.transform.position += Vector3.right * moveAmount;
-            }
-            if (mousePosition.y > height - edgeSize)
-            {
-                _mainCamera.transform.position += Vector3.up * moveAmount;
-            }
-            if (mousePosition.y < edgeSize)
-            {
-                _mainCamera.transform.position += Vector3.down * moveAmount;
-            }
+            _mainCamera.transform.position += Utils.GetMouseEdgeScrollDirection() * moveAmount;
         }
     }
 

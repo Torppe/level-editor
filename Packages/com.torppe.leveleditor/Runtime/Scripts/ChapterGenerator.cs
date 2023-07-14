@@ -6,6 +6,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using static LevelGenerator;
 using static UnityEngine.EventSystems.PointerEventData;
@@ -22,6 +23,7 @@ public class ChapterGenerator : Generator
     private List<DeathWall> _deathWalls = new List<DeathWall>();
     private List<ChapterLevel> _levels = new List<ChapterLevel>();
     private string _levelFolder;
+    private Camera _mainCamera;
 
     private void OnEnable()
     {
@@ -30,6 +32,18 @@ public class ChapterGenerator : Generator
     private void OnDisable()
     {
         ChapterLevel.OnAnyClicked -= SelectLevel;
+    }
+
+    private void Awake()
+    {
+        _mainCamera = Camera.main;
+        _saveSubFolder = "Chapters";
+        _levelFolder = Application.dataPath + $"/Saves/Levels/";
+    }
+
+    private void Update()
+    {
+        MoveCamera();
     }
 
     private void SelectLevel(ChapterLevel level, InputButton inputButton)
@@ -56,19 +70,13 @@ public class ChapterGenerator : Generator
         }
     }
 
-    private void Awake()
-    {
-        _saveSubFolder = "Chapters";
-        _levelFolder = Application.dataPath + $"/Saves/Levels/";
-    }
-
     public void LoadLevel(TMP_InputField input)
     {
         var fileName = input.text.Trim();
         if (_levels.Find(l => fileName.Equals(l.FileName)))
             return;
-
-        LoadLevel(fileName, Vector2.zero);
+        // LoadLevel(fileName, Vector2.zero);
+        FindFreeSpaceAndLoadLevel(fileName);
     }
 
     public void LoadLevel(string fileName, Vector2 position)
@@ -90,6 +98,82 @@ public class ChapterGenerator : Generator
         level.Load(levelData, fileName);
 
         _levels.Add(level);
+    }
+
+    public void FindFreeSpaceAndLoadLevel(string fileName)
+    {
+        if (String.IsNullOrWhiteSpace(fileName))
+            return;
+
+        string path = $"{_levelFolder}{fileName}.json";
+
+        if (!File.Exists(path))
+        {
+            Debug.LogError("ERROR: No file named " + path + " found!");
+            return;
+        }
+
+        var levelData = JsonConvert.DeserializeObject<LevelData>(File.ReadAllText(path), _jsonSettings);
+
+        var instantiatedLevel = Instantiate(_levelPrefab, Vector2.zero, Quaternion.identity);
+        instantiatedLevel.Load(levelData, fileName);
+
+        instantiatedLevel.transform.position = FindFreeSpace(instantiatedLevel);
+
+        _levels.Add(instantiatedLevel);
+    }
+
+    private Vector2 FindFreeSpace(ChapterLevel level)
+    {
+        if (_levels.Count == 0)
+        {
+            return Vector2.zero;
+        }
+
+        var combinedBoundingBoxCenter = _levels.Aggregate(Vector3.zero, (acc, x) => acc + x.transform.position) / _levels.Count;
+        var combinedBoundingBox = new Bounds(combinedBoundingBoxCenter, Vector3.zero);
+        var levelBoundingBoxes = new List<Bounds>();
+
+        foreach (var existingLevels in _levels)
+        {
+            Vector3 size = (Vector3Int)existingLevels.Data.Size;
+            size.z = 1;
+            var bounds = new Bounds(existingLevels.transform.position, size);
+
+            combinedBoundingBox.Encapsulate(bounds);
+            levelBoundingBoxes.Add(bounds);
+        }
+
+        var freeSpaceFound = false;
+        var position = Vector2.zero;
+        Vector2Int levelSize = level.Data.Size;
+        Vector2Int halfSize = levelSize / 2;
+
+        for (float x = combinedBoundingBox.min.x; x < combinedBoundingBox.max.x; x++)
+        {
+            for (float y = combinedBoundingBox.min.y; y < combinedBoundingBox.max.y; y++)
+            {
+                var point = new Vector2(x, y) + halfSize;
+                var newLevelBounds = new Bounds(point, (Vector3Int)levelSize);
+
+                if (levelBoundingBoxes.Any(b => b.Intersects(newLevelBounds)))
+                    continue;
+
+                position = point;
+                freeSpaceFound = true;
+                break;
+            }
+
+            if (freeSpaceFound)
+                break;
+        }
+
+        if (!freeSpaceFound)
+        {
+            position = (Vector2)combinedBoundingBox.max + halfSize;
+        }
+
+        return position;
     }
 
 
@@ -125,8 +209,7 @@ public class ChapterGenerator : Generator
 
     private void AddDeathWall(DeathWallData deathWallData)
     {
-        // var pos = editCam.transform.position;
-        var pos = Camera.main.transform.position;
+        var pos = _mainCamera.transform.position;
         pos.z = 0;
 
         var deathWall = Instantiate(_deathWallPrefab, pos, Quaternion.identity, _rootTransform);
@@ -159,6 +242,18 @@ public class ChapterGenerator : Generator
     public void SwitchEditor()
     {
         OnEditorSwitch?.Invoke("LevelGenerator");
+    }
+
+    public void OnCenterCamera()
+    {
+        var camPos = _mainCamera.transform.position;
+        _mainCamera.transform.position = new Vector3(0, 0, camPos.z);
+    }
+
+    private void MoveCamera()
+    {
+        var moveAmount = 500 * Time.deltaTime;
+        _mainCamera.transform.position += Utils.GetMouseEdgeScrollDirection() * moveAmount;
     }
 
     [Serializable]
