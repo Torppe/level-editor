@@ -11,7 +11,7 @@ public abstract class Generator : MonoBehaviour
     public static Action<string> OnEditorSwitch;
 
     [SerializeField]
-    private List<GameObject> _disableOnPlay = new List<GameObject>();
+    protected List<GameObject> _disableOnPlay = new List<GameObject>();
     [SerializeField]
     private TMP_Text changeStateButtonText;
 

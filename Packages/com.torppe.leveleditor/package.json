@@ -1,6 +1,6 @@
 {
   "name": "com.torppe.leveleditor",
-  "version": "2.0.0",
+  "version": "2.1.1",
   "displayName": "Level Editor",
   "description": "This is the level editor to create Koura levels",
   "unity": "2021.3",

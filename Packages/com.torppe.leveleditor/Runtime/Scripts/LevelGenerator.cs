@@ -24,8 +24,7 @@ public class LevelGenerator : Generator
     private Material _groupedMaterial;
     [SerializeField]
     private bool _edgeScrollEnabled = false;
-
-    private (Vector2Int appliedValue, Vector2Int editedValue) _gridSize = new() { appliedValue = new Vector2Int(200, 200), editedValue = new Vector2Int(200, 200) };
+    private (Vector2Int appliedValue, Vector2Int editedValue) _gridSize = new() { appliedValue = new Vector2Int(64, 36), editedValue = new Vector2Int(64, 36) };
     private bool _groupEditing = false;
     private bool _alternateActionHeld = false;
     private bool _clickHeld = false;
@@ -157,8 +156,14 @@ public class LevelGenerator : Generator
         RemoveBlocks();
     }
 
-    public void SwitchEditor()
+    public void SwitchEditor(bool confirm)
     {
+        if (!confirm)
+        {
+            UIConfirmationModal.OnConfirm?.Invoke("Are you sure you want to switch the editor? Your unsaved progress will be lost.", () => SwitchEditor(true));
+            return;
+        }
+
         OnEditorSwitch?.Invoke("ChapterGenerator");
     }
 

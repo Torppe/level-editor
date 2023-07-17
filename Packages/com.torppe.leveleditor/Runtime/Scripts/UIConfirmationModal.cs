@@ -14,7 +14,6 @@ public class UIConfirmationModal : MonoBehaviour
     private TMP_Text _description;
 
     private Action _callback;
-
     void OnEnable()
     {
         OnConfirm += Confirm;

@@ -1,13 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using static LevelGenerator;
 using static UnityEngine.EventSystems.PointerEventData;
 
@@ -98,6 +95,7 @@ public class ChapterGenerator : Generator
         level.Load(levelData, fileName);
 
         _levels.Add(level);
+        _disableOnPlay.Add(level.gameObject);
     }
 
     public void FindFreeSpaceAndLoadLevel(string fileName)
@@ -121,6 +119,7 @@ public class ChapterGenerator : Generator
         instantiatedLevel.transform.position = FindFreeSpace(instantiatedLevel);
 
         _levels.Add(instantiatedLevel);
+        _disableOnPlay.Add(instantiatedLevel.gameObject);
     }
 
     private Vector2 FindFreeSpace(ChapterLevel level)
@@ -239,8 +238,14 @@ public class ChapterGenerator : Generator
         OnToggleState?.Invoke(_editing, positionToLevel);
     }
 
-    public void SwitchEditor()
+    public void SwitchEditor(bool confirm)
     {
+        if (!confirm)
+        {
+            UIConfirmationModal.OnConfirm?.Invoke("Are you sure you want to switch the editor? Your unsaved progress will be lost.", () => SwitchEditor(true));
+            return;
+        }
+
         OnEditorSwitch?.Invoke("LevelGenerator");
     }
 
