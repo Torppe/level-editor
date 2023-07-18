@@ -182,25 +182,30 @@ public class LevelGenerator : Generator
         if (_blocksToGroup.Count == 0)
             return;
 
-        ApplyGroup(_blocksToGroup, Guid.NewGuid().ToString(), _blocksToGroup.FirstOrDefault(b => b.Data.Function == "moving"));
+        ApplyGroup(_blocksToGroup, Guid.NewGuid().ToString());
 
         _blocksToGroup.Clear();
     }
 
-    public void ApplyGroup(IEnumerable<Block> blocks, string groupId, Block functionalBlock = null)
+    public void ApplyGroup(IEnumerable<Block> blocks, string groupId)
     {
         if (blocks.Count() == 0)
             return;
+
+        var activatedBlock = blocks.FirstOrDefault(b => b.TryGetComponent<IDeactivatable>(out var d) && !d.Deactivated);
+        if (activatedBlock == null)
+            activatedBlock = blocks.First();
 
         foreach (var block in blocks)
         {
             block.Data.GroupId = groupId.ToString();
             block.ChangeMaterial(_groupedMaterial);
 
-            if (functionalBlock != null && block != functionalBlock && block.TryGetComponent<BlockMoving>(out var moving))
-            {
-                moving.ToggleEndpoint(false);
-            }
+            if (block == activatedBlock)
+                continue;
+
+            if (block.TryGetComponent<IDeactivatable>(out var deactivatable))
+                deactivatable.Deactivate();
         }
     }
 
@@ -333,7 +338,6 @@ public class LevelGenerator : Generator
         if (_blocksToGroup.Count > 0 && _blocksToGroup.First().Data.Function != block.Data.Function)
             return;
 
-
         _blocksToGroup.Add(block);
         block.Highlight(true);
     }
@@ -459,7 +463,7 @@ public class LevelGenerator : Generator
 
         foreach (var group in groups)
         {
-            ApplyGroup(group.Value, group.Key, group.Value.FirstOrDefault(b => b.Data.Function == "moving" && !((BlockMovingData)b.Data).Deactivated));
+            ApplyGroup(group.Value, group.Key);
         }
     }
 

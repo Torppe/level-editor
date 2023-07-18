@@ -2,10 +2,8 @@ using System;
 using TMPro;
 using UnityEngine;
 
-public class BlockMoving : Block
+public class BlockMoving : Block, IDeactivatable
 {
-    public Vector2 EndpointPosition => _endpoint.position;
-
     [SerializeField]
     private Transform _endpoint;
     [SerializeField]
@@ -13,7 +11,7 @@ public class BlockMoving : Block
     private int _speed = 3;
     private LineRenderer _lineRenderer;
 
-    public bool deactivated;
+    public bool Deactivated { get; set; }
 
     private void OnEnable()
     {
@@ -32,11 +30,11 @@ public class BlockMoving : Block
 
     private void Update()
     {
-        if (deactivated)
+        if (Deactivated)
             return;
 
         _lineRenderer.SetPosition(0, transform.position);
-        _lineRenderer.SetPosition(1, EndpointPosition);
+        _lineRenderer.SetPosition(1, _endpoint.position);
     }
 
     public override void Load(BlockData blockData)
@@ -44,16 +42,11 @@ public class BlockMoving : Block
         var data = (BlockMovingData)blockData;
 
         base.Load(data);
+        _endpoint.position = transform.position + (Vector3)data.EndpointRelativePosition;
+        SetSpeed(data.Speed);
 
         if (data.Deactivated)
-        {
-            ToggleEndpoint(false);
-        }
-        else
-        {
-            _endpoint.position = transform.position + (Vector3)data.EndpointRelativePosition;
-            SetSpeed(data.Speed);
-        }
+            Deactivate();
     }
 
     public override void Save()
@@ -63,24 +56,11 @@ public class BlockMoving : Block
         BlockMovingData data = new BlockMovingData();
         data.Copy(Data);
         data.Function = "moving";
-        data.Deactivated = deactivated;
-
-        if (!deactivated)
-        {
-            data.EndpointRelativePosition = EndpointPosition - (Vector2)transform.position;
-            data.Speed = _speed;
-        }
+        data.EndpointRelativePosition = _endpoint.position - transform.position;
+        data.Speed = _speed;
+        data.Deactivated = Deactivated;
 
         Data = data;
-    }
-
-    public void ToggleEndpoint(bool toggled)
-    {
-        deactivated = !toggled;
-        _lineRenderer.enabled = toggled;
-        _endpoint.gameObject.SetActive(toggled);
-        if (!toggled)
-            _endpoint.GetComponent<DraggableUIElement>().OnClick -= ChangeSpeed;
     }
 
     private void SetSpeed(int speed)
@@ -98,6 +78,14 @@ public class BlockMoving : Block
             newSpeed = 3;
 
         SetSpeed(newSpeed);
+    }
+
+    public void Deactivate()
+    {
+        Deactivated = true;
+        _lineRenderer.enabled = false;
+        _endpoint.gameObject.SetActive(false);
+        _endpoint.GetComponent<DraggableUIElement>().OnClick -= ChangeSpeed;
     }
 }
 

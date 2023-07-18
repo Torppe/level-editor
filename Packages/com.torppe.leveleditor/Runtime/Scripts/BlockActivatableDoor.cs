@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlockActivatableDoor : Block
+public class BlockActivatableDoor : Block, IDeactivatable
 {
     [SerializeField]
     private Transform _endpoint;
     private LineRenderer _lineRenderer;
+
+    public bool Deactivated { get; set; }
 
     private void Awake()
     {
@@ -26,6 +28,9 @@ public class BlockActivatableDoor : Block
 
         base.Load(data);
         _endpoint.position = transform.position + (Vector3)data.EndpointRelativePosition;
+
+        if (data.Deactivated)
+            Deactivate();
     }
 
     public override void Save()
@@ -36,13 +41,22 @@ public class BlockActivatableDoor : Block
         data.Copy(Data);
         data.Function = "activatable_door";
         data.EndpointRelativePosition = _endpoint.position - transform.position;
+        data.Deactivated = Deactivated;
 
         Data = data;
+    }
+
+    public void Deactivate()
+    {
+        Deactivated = true;
+        _lineRenderer.enabled = false;
+        _endpoint.gameObject.SetActive(false);
     }
 }
 
 [Serializable]
 public class BlockActivatableDoorData : BlockData
 {
+    public bool Deactivated;
     public Vector2 EndpointRelativePosition;
 }

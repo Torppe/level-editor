@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlockLava : Block
+public class BlockLava : Block, IDeactivatable
 {
     [SerializeField]
     private Transform _endpoint;
@@ -20,6 +20,8 @@ public class BlockLava : Block
     private InputField _height;
 
     private LineRenderer _lineRenderer;
+
+    public bool Deactivated { get; set; }
 
     private void OnEnable()
     {
@@ -70,6 +72,9 @@ public class BlockLava : Block
         _activeTimeInput.Value = data.ActiveTime;
         _deactiveTimeInput.Value = data.DeactiveTime;
         ChangePlatformSize(data.Size);
+
+        if (data.Deactivated)
+            Deactivate();
     }
 
     public override void Save()
@@ -85,6 +90,7 @@ public class BlockLava : Block
         data.DeactiveTime = _deactiveTimeInput.Value;
         data.EndpointRelativePosition = _endpoint.position - transform.position;
         data.Size = _platform.localScale;
+        data.Deactivated = Deactivated;
 
         Data = data;
     }
@@ -92,6 +98,13 @@ public class BlockLava : Block
     public void ToggleConfigurationUi()
     {
         _configurationUi.gameObject.SetActive(!_configurationUi.gameObject.activeSelf);
+    }
+
+    public void Deactivate()
+    {
+        Deactivated = true;
+        _lineRenderer.enabled = false;
+        _endpoint.gameObject.SetActive(false);
     }
 }
 
@@ -104,6 +117,8 @@ public class BlockLavaData : BlockData
     public int DeactiveTime;
     public Vector2 EndpointRelativePosition;
     public Vector2 Size;
+
+    public bool Deactivated;
 }
 
 
