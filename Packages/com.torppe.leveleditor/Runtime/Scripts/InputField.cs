@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -19,8 +20,12 @@ public class InputField : MonoBehaviour
         {
             _value = value;
             InputFieldComponent.text = value.ToString();
+            if (callback != null)
+                callback(value);
         }
     }
+
+    public Action<int> callback;
 
     [SerializeField]
     private TMP_Text LabelComponent;
@@ -39,11 +44,6 @@ public class InputField : MonoBehaviour
                 Value = result;
             }
         });
-    }
-
-    void OnDisable()
-    {
-        InputFieldComponent.onValueChanged.RemoveAllListeners();
     }
 }
 

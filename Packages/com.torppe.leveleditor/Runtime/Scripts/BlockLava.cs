@@ -8,12 +8,16 @@ public class BlockLava : Block
     [SerializeField]
     private Transform _endpoint;
     [SerializeField]
+    private Transform _platform;
+    [SerializeField]
     private ConfigurationUi _configurationUi;
 
     private InputField _ascendSpeedInput;
     private InputField _descendSpeedInput;
     private InputField _activeTimeInput;
     private InputField _deactiveTimeInput;
+    private InputField _width;
+    private InputField _height;
 
     private LineRenderer _lineRenderer;
 
@@ -35,6 +39,18 @@ public class BlockLava : Block
         _descendSpeedInput = _configurationUi.AddField("Descend Speed", 20);
         _activeTimeInput = _configurationUi.AddField("Active Time", 1);
         _deactiveTimeInput = _configurationUi.AddField("Deactive Time", 3);
+        _width = _configurationUi.AddField("Width", 1, (value) => ChangePlatformSize(new Vector2(value, _platform.localScale.y)));
+        _height = _configurationUi.AddField("Height", 1, (value) => ChangePlatformSize(new Vector2(_platform.localScale.x, value)));
+    }
+
+    private void ChangePlatformSize(Vector2 size)
+    {
+        _platform.localScale = new Vector3(size.x, size.y, _platform.localScale.z);
+
+        var newPosition = _platform.localPosition;
+        newPosition.y = (size.y / 2) - 0.5f;
+
+        _platform.localPosition = newPosition;
     }
 
     private void Update()
@@ -53,6 +69,7 @@ public class BlockLava : Block
         _descendSpeedInput.Value = data.DescendSpeed;
         _activeTimeInput.Value = data.ActiveTime;
         _deactiveTimeInput.Value = data.DeactiveTime;
+        ChangePlatformSize(data.Size);
     }
 
     public override void Save()
@@ -67,6 +84,7 @@ public class BlockLava : Block
         data.ActiveTime = _activeTimeInput.Value;
         data.DeactiveTime = _deactiveTimeInput.Value;
         data.EndpointRelativePosition = _endpoint.position - transform.position;
+        data.Size = _platform.localScale;
 
         Data = data;
     }
@@ -85,6 +103,7 @@ public class BlockLavaData : BlockData
     public int ActiveTime;
     public int DeactiveTime;
     public Vector2 EndpointRelativePosition;
+    public Vector2 Size;
 }
 
 
