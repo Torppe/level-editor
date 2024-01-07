@@ -35,6 +35,12 @@ public class InputField : MonoBehaviour
     private int _value;
     private string _label;
 
+    public void SetValueWithoutCallback(int value)
+    {
+        _value = value;
+        InputFieldComponent.text = value.ToString();
+    }
+
     void OnEnable()
     {
         InputFieldComponent.onValueChanged.AddListener((input) =>

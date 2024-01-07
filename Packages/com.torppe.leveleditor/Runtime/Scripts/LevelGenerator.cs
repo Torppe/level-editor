@@ -36,6 +36,7 @@ public class LevelGenerator : Generator
     private HashSet<Block> _blocksToGroup = new HashSet<Block>();
     private Transform _gridObjectsParent;
     private Dictionary<Vector2, Renderer> _gridObjects = new Dictionary<Vector2, Renderer>();
+    private Vector2 wasdMovement;
 
     void OnEnable()
     {
@@ -68,6 +69,11 @@ public class LevelGenerator : Generator
         MoveBrush();
         MoveUIElement();
         SetBlocks();
+    }
+
+    public void OnNavigate(InputValue value)
+    {
+        wasdMovement = value.Get<Vector2>();
     }
 
     public void OnClick(InputValue value)
@@ -211,9 +217,16 @@ public class LevelGenerator : Generator
 
     private void MoveCamera()
     {
+        var moveAmount = 50 * Time.deltaTime;
+
+        if (wasdMovement != Vector2.zero)
+        {
+            _mainCamera.transform.position += (Vector3)wasdMovement * moveAmount;
+            return;
+        }
+
         if (_edgeScrollEnabled)
         {
-            var moveAmount = 50 * Time.deltaTime;
             _mainCamera.transform.position += Utils.GetMouseEdgeScrollDirection() * moveAmount;
         }
     }

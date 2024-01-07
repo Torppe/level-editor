@@ -5,6 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static LevelGenerator;
 using static UnityEngine.EventSystems.PointerEventData;
 
@@ -21,6 +22,7 @@ public class ChapterGenerator : Generator
     private List<ChapterLevel> _levels = new List<ChapterLevel>();
     private string _levelFolder;
     private Camera _mainCamera;
+    private Vector2 wasdMovement;
 
     private void OnEnable()
     {
@@ -41,6 +43,11 @@ public class ChapterGenerator : Generator
     private void Update()
     {
         MoveCamera();
+    }
+
+    public void OnNavigate(InputValue value)
+    {
+        wasdMovement = value.Get<Vector2>();
     }
 
     private void SelectLevel(ChapterLevel level, InputButton inputButton)
@@ -258,7 +265,12 @@ public class ChapterGenerator : Generator
     private void MoveCamera()
     {
         var moveAmount = 500 * Time.deltaTime;
-        _mainCamera.transform.position += Utils.GetMouseEdgeScrollDirection() * moveAmount;
+
+        if (wasdMovement != Vector2.zero)
+        {
+            _mainCamera.transform.position += (Vector3)wasdMovement * moveAmount;
+            return;
+        }
     }
 
     [Serializable]
